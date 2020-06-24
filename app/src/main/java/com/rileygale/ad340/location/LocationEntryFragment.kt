@@ -9,6 +9,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.rileygale.ad340.Location
+import com.rileygale.ad340.LocationRepository
 
 import com.rileygale.ad340.R
 
@@ -17,10 +19,16 @@ import com.rileygale.ad340.R
  */
 class LocationEntryFragment : Fragment() {
 
+    private lateinit var locationRepository: LocationRepository
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        locationRepository = LocationRepository(requireContext())
+
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_location_entry, container, false)
 
@@ -37,6 +45,7 @@ class LocationEntryFragment : Fragment() {
             else{
                 //forecastRepository.loadForecast(zipcode)
                 //Toast.makeText(requireContext(), "Zipcode Entered", Toast.LENGTH_SHORT).show()
+                locationRepository.saveLocation(Location.Zipcode(zipcode))
                 findNavController().navigateUp()
             }
         }

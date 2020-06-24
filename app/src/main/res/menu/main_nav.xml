@@ -10,7 +10,6 @@
     <item
         android:id="@+id/weeklyForecastFragment"
         android:icon="@drawable/ic_wb_cloudy_black_24dp"
-        android:title="@string/bottom_nav_label_weekly"
-        />
+        android:title="@string/bottom_nav_label_weekly" />
 
 </menu>

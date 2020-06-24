@@ -24,10 +24,13 @@ class ForecastDetailsFragment : Fragment() {
         tempDisplaySettingsManager = TempDisplaySettingManager(requireContext())
 
         val tempText = layout.findViewById<TextView>(R.id.tempText)
-        val descriptionTesxt = layout.findViewById<TextView>(R.id.descriptionText)
+        val descriptionText = layout.findViewById<TextView>(R.id.descriptionText)
+
 
         tempText.text = formatTempForDisplay(args.temp, tempDisplaySettingsManager.getTempDisplaySetting())
-        descriptionTesxt.text = args.description
+        descriptionText.text = args.description
         return layout
     }
+
+
 }
