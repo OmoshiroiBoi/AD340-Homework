@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,6 +38,10 @@ class WeeklyForecastFragment : Fragment() {
 
         //inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_weekly_forecast, container, false)
+        val emptyText = view.findViewById<TextView>(R.id.emptyText)
+        emptyText.bringToFront()
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
+        progressBar.bringToFront()
 
         val zipcode = arguments?.getString(KEY_ZIPCODE) ?: ""//we're getting the bundle and looking for the value in it || !! will crash program if values are null
 
@@ -54,6 +60,9 @@ class WeeklyForecastFragment : Fragment() {
 
 
         val weeklyForecastObserver = Observer<WeeklyForecast>{ weeklyForecast ->
+            emptyText.visibility = View.GONE
+            progressBar.visibility = View.GONE
+
             //update our list adapter
             dailyForecastListAdapter.submitList(weeklyForecast.daily)
         }
@@ -67,7 +76,11 @@ class WeeklyForecastFragment : Fragment() {
         locationRepository = LocationRepository(requireContext())
         val savedLocationObserver = Observer<Location> { savedLocation ->
             when (savedLocation) {
-                is Location.Zipcode -> forecastRepository.loadWeeklyForecast(savedLocation.zipcode)
+                is Location.Zipcode -> {
+                    progressBar.visibility = View.VISIBLE
+                    forecastRepository.loadWeeklyForecast(savedLocation.zipcode)
+                }
+
             }
         }
         locationRepository.savedLocation.observe(viewLifecycleOwner, savedLocationObserver)

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.navigation.ui.navigateUp
@@ -37,17 +38,22 @@ class CurrentForecastFragment : Fragment() {
 
         //inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_current_forecast, container, false)
-        val locationName: TextView = view.findViewById(R.id.locationName)
-        val tempText: TextView = view.findViewById(R.id.tempText)
+        val locationName = view.findViewById<TextView>(R.id.locationName)
+        val tempText= view.findViewById<TextView>(R.id.tempText)
+        val emptyText = view.findViewById<TextView>(R.id.emptyText)
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
 
         val zipcode = arguments?.getString(KEY_ZIPCODE) ?: ""//we're getting the bundle and looking for the value in it || !! will crash program if values are null
 
         tempDisplaySettingsManager = TempDisplaySettingManager(requireContext())
 
-
-
         //create the observer which updates the UI in response to forecast updates
         val currentWeatherObserver = Observer<CurrentWeather> { weather ->
+            emptyText.visibility = View.GONE
+            progressBar.visibility = View.GONE
+            locationName.visibility = View.VISIBLE
+            tempText.visibility = View.VISIBLE
+
             locationName.text = weather.name
             tempText.text = formatTempForDisplay(weather.forecast.temp,tempDisplaySettingsManager.getTempDisplaySetting())
         }
@@ -62,7 +68,10 @@ class CurrentForecastFragment : Fragment() {
         locationRepository = LocationRepository(requireContext())
         val savedLocationObserver = Observer<Location> { savedLocation ->
             when (savedLocation) {
-                is Location.Zipcode -> forecastRepository.loadCurrentForecast(savedLocation.zipcode)
+                is Location.Zipcode -> {
+                    progressBar.visibility = View.VISIBLE
+                    forecastRepository.loadCurrentForecast(savedLocation.zipcode)
+                }
             }
         }
         locationRepository.savedLocation.observe(viewLifecycleOwner, savedLocationObserver)
